@@ -1,4 +1,1 @@
 streamlit
-hummingbot
-pandas
-pyyaml
