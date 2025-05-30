@@ -1,3 +1,4 @@
 streamlit
 PyYAML
 pandas
+hummingbot==20250525
