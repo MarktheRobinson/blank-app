@@ -1,4 +1,2 @@
 streamlit
-hummingbot==2023.9.4
-pandas
 PyYAML
