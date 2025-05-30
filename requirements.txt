@@ -1,1 +1,1 @@
-<xcode>streamlit </xcode>
+streamlit
