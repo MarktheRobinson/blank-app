@@ -1,4 +1,4 @@
-FROM hummingbot/hummingbot:20250525
+FROM hummingbot/hummingbot:latest
 WORKDIR /app
 COPY . /app
 RUN pip install streamlit PyYAML pandas
