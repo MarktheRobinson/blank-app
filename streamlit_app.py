@@ -12,7 +12,7 @@ st.title("Hummingbot Dashboard")
 
 try:
     import hummingbot
-    st.write("Hummingbot module found:", hummingbot.__version__)
+    st.write("Hummingbot module found.")
 except ImportError as e:
     st.error(f"Failed to import hummingbot: {str(e)}")
     logger.error(f"Failed to import hummingbot: {str(e)}")
