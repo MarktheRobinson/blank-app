@@ -18,6 +18,7 @@ st.write("App is running...")
 try:
     from hummingbot.client.hummingbot_application import HummingbotApplication
     from hummingbot.core.utils.async_utils import safe_ensure_future
+    from hummingbot.client.config.config_var import GLOBAL_CONFIG_PATH
 except ImportError:
     HummingbotApplication = None
     st.error("Hummingbot module not found. Bot functionality is disabled.")
@@ -42,6 +43,11 @@ os.makedirs(hummingbot_conf_dir, exist_ok=True)
 os.environ["HUMMINGBOT_CONF_DIR"] = hummingbot_conf_dir
 logger.info(f"Hummingbot config directory set to: {hummingbot_conf_dir}")
 
+# Patch GLOBAL_CONFIG_PATH
+if HummingbotApplication:
+    GLOBAL_CONFIG_PATH._value = Path(hummingbot_conf_dir) / "conf_client.yml"
+    logger.info(f"Patched GLOBAL_CONFIG_PATH to: {GLOBAL_CONFIG_PATH._value}")
+
 # Ensure conf_client.yml exists
 conf_client_path = Path(hummingbot_conf_dir) / "conf_client.yml"
 if not conf_client_path.exists():
@@ -53,14 +59,18 @@ if not conf_client_path.exists():
         st.error(f"Failed to create conf_client.yml: {str(e)}")
         logger.error(f"Failed to create conf_client.yml: {str(e)}")
 
-async def initialize_hummingbot():
+async def initialize_hummingbot(config):
     if HummingbotApplication:
         try:
             logger.info("Initializing Hummingbot...")
             bot = HummingbotApplication()
+            # Extract market names from config
+            connector = config.get("connector_name", "kraken")
+            trading_pair = config.get("trading_pair", "SOLUSDC")
+            market_names = {connector: [trading_pair]}
             # Run async initialization tasks
             safe_ensure_future(bot._initialize_notifiers())
-            safe_ensure_future(bot._initialize_markets())
+            safe_ensure_future(bot._initialize_markets(market_names))
             return bot
         except Exception as e:
             logger.error(f"Error initializing Hummingbot: {str(e)}\n{traceback.format_exc()}")
@@ -71,7 +81,7 @@ def run_hummingbot():
     try:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        bot = loop.run_until_complete(initialize_hummingbot())
+        bot = loop.run_until_complete(initialize_hummingbot(config))
         loop.close()
         if bot:
             st.session_state.bot = bot
