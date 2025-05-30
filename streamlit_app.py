@@ -22,8 +22,16 @@ try:
     st.write("Exchange:", config.get("exchange", "Not specified"))
     st.write("Trading Pair:", config.get("trading_pair", "Not specified"))
     if st.button("Start Bot"):
-        st.write("Bot start functionality not yet implemented.")
+        try:
+            bot.start()
+            st.write("Bot started with configuration:", config)
+        except Exception as e:
+            st.error(f"Error starting bot: {str(e)}")
     if st.button("Stop Bot"):
-        st.write("Bot stop functionality not yet implemented.")
+        try:
+            bot.stop()
+            st.write("Bot stopped")
+        except Exception as e:
+            st.error(f"Error stopping bot: {str(e)}")
 except Exception as e:
     st.error(f"Error initializing Hummingbot: {str(e)}")
